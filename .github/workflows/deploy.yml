@@ -25,4 +25,9 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-xxxxx?key=$RENDER_API_KEY" 
+          # Get the service ID from Render's API
+          SERVICE_ID=$(curl -s -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/services | jq -r '.[0].id')
+          # Trigger deployment
+          curl -X POST "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" 
